@@ -1,116 +1,164 @@
-#include "TicTacToe.h"
-#include <cstdlib>
+
+#include <iostream>
 using namespace std;
 
-char board[3][3]; //Possible values are X, O and _ (for blank positions)
-char player = 'X';
+void showTable();
+void playerTurn();
+bool gameOver();
 
-bool isAvailable(int row, int column)
+char turn;
+bool draw = false;
+char table[3][3] = {{'1', '2', '3'},
+                    {'4', '5', '6'},
+                    {'7', '8', '9'}};
+
+
+bool gameOver()
 {
-	//TODO: Implement this code so that it tells the user whether or not he can play in the selected cell
-	return true;
+    for (int i = 0; i < 3; i++)//check if there is a winner
+    {
+        if (table[i][0] == table[i][1] && table[i][1] == table[i][2])
+        {
+            return true;
+        }else if( (table[0][i] == table[1][i] && table[1][i] == table[2][i]))
+        {
+            return true;
+        }else if(table[0][0] == table[1][1] && table[1][1] == table[2][2])
+        {
+            return true;
+        }else if(table[0][2] == table[1][1] && table[1][1] == table[2][0])
+        {
+            return true;
+        }
+    }
+
+    for (int i = 0; i < 3; i++)//check if  draw
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            if (table[i][j] != 'X' && table[i][j] != 'O')
+            {
+                return false;
+            }
+        }
+    }
+    draw = true;
+    return true;
 }
 
-//Give initial values to the board matrix
-void init()
+int main()
 {
-	for(int i = 0 ; i < 3 ; i++)
-	{
-		for(int j = 0 ; j < 3 ; j++)
-		{
-			board[i][j] = '_';
-		}
-	}
+    cout << "Game Tic - Tac - Toe\n";
+    cout << endl<<endl ;
+
+    char name1[17] = "first player";
+    cout<<"player 1[X]: ";
+    cin>> name1;
+
+    char name2[17] = "second player";
+    cout<<"player 2[O]: ";
+    cin>> name2;
+
+    cout << endl ;
+    cout << name1<< "[X] VS "<<name2 <<  "[O]\n";
+    turn = 'X';
+
+
+    while (!gameOver())
+    {
+        showTable();
+        playerTurn();
+        gameOver();
+    }
+
+    if (turn == 'O' && !draw)
+    {
+        showTable();
+        cout << endl << endl << name1<< " [X] wins!\n";
+    }
+    else if (turn == 'X' && !draw)
+    {
+        showTable();
+        cout << endl << endl << name2<< " [O] wins!\n";
+    }
+    else
+    {
+        showTable();
+        cout << endl << endl << "it's a  draw!\n";
+    }
 }
 
-void clearScreen()
+void playerTurn()
 {
-	#ifdef _WIN32
-	system("cls");
-	#else
-	system("clear");
-	#endif
+    int choice;
+    int row = 0, column = 0;
+
+    if (turn== 'X')
+    {
+        cout << "[X] choose the number where you want to play: ";
+    }
+    else if (turn == 'O')
+    {
+        cout << "[O] choose the number where you want to play: ";
+    }
+    cin >> choice;
+
+
+    switch (choice)
+    {
+        case 1: row = 0; column = 0;
+            break;
+        case 2: row = 0; column = 1;
+            break;
+        case 3: row = 0; column = 2;
+            break;
+        case 4: row = 1; column = 0;
+            break;
+        case 5: row = 1; column = 1;
+            break;
+        case 6: row = 1; column = 2;
+            break;
+        case 7: row = 2; column = 0;
+            break;
+        case 8: row = 2; column = 1;
+            break;
+        case 9: row = 2; column = 2;
+            break;
+
+        default:
+                cout << "that number isn't available, try 1-9\n";
+                playerTurn();
+    }
+
+
+    if (turn == 'X' && table[row][column] != 'X' && table[row][column] != 'O')
+    {
+        table[row][column] = 'X';
+        turn = 'O';
+    }
+    else if (turn == 'O' && table[row][column] != 'X' && table[row][column] != 'O')
+    {
+        table[row][column] = 'O';
+        turn = 'X';
+    }
+    else
+    {
+        cout << "this number has been used, try another one\n";
+        playerTurn();
+    }
 }
 
-bool validate(int number)
+void showTable()
 {
-	if(number >= 1 && number <= 3)
-	{
-		return true;
-	}else
-	{
-		cout << "Please pick a value between 1 and 3" << endl;
-		return  false;
-	}
-}
 
-bool gameover()
-{
-	//TODO: Implement this method,verify if any player has won the match of it's being a tie.
-	//Return true if the game is over. Print message informing the user about what just happened.
-	if(false){ // change this with a real condition
-		cout << "You loose" << endl;
-	}
-	return false;
-}
-
-bool isValidInput(istream& in){
-	if(in.fail())
-	{
-		cout <<"Only numbers are accepted" << endl;
-	    in.clear();
-	    in.ignore(numeric_limits<streamsize>::max(), '\n'); //skip bad input
-	    return false;
-	}else
-	{
-		return true;
-	}
-}
-
-void showBoard()
-{
-	while(!gameover())
-	{
-		clearScreen();
-		int row = 0;
-		int column = 0;
-
-		cout << "It's " << player << "'s turn" << endl;
-		//printing column numbers
-		cout << "\t";
-		for(int i = 0 ; i < 3 ; i++)
-		{
-			cout << i + 1 << "\t";
-		}
-		cout << endl;
-
-		for(int i = 0 ; i < 3 ; i++)
-		{
-			cout << i + 1 << "\t";
-			for(int j = 0 ; j < 3 ; j++)
-			{
-				cout << board[i][j] << "\t";
-			}
-			cout << endl;
-		}
-		do
-		{
-			cout << "In what row would you like to play? =>";
-			cin >> row;
-		}while(!isValidInput(cin) && !validate(row));
-		do
-		{
-			cout << "In what column would you like to play? => ";
-			cin >> column;
-		}while(!isValidInput(cin) && !validate(column));
-
-		if(isAvailable(row,column))
-		{
-			board[row - 1][column - 1] = player;
-			player = player == 'X' ? 'O' : 'X';
-		}else
-		{
-			cout << "The cell " << row << " , " << column << " is not available" << endl;
-		}
-	}
+    cout<< endl;
+    cout << "     |     |     " << endl;
+    cout << "  " << table[0][0] << "  |  " << table[0][1] << "  |  " << table[0][2] << endl;
+    cout << "_____|_____|_____" << endl;
+    cout << "     |     |     " << endl;
+    cout << "  " << table[1][0] << "  |  " << table[1][1] << "  |  " << table[1][2] << endl;
+    cout << "_____|_____|_____" << endl;
+    cout << "     |     |     " << endl;
+    cout << "  " << table[2][0] << "  |  " << table[2][1] << "  |  " << table[2][2] << endl;
+    cout << "     |     |     " << endl;
 }
